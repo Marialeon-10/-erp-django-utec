@@ -10,17 +10,17 @@
 
 <div class="erp-card" style="max-width:580px;">
 
-\<div class="erp-card-header"\>Datos del cliente\</div\>
+<div class="erp-card-header">Datos del cliente</div>
 
-\<form method="post" style="margin-top:.5rem;"\>
+<form method="post" style="margin-top:.5rem;">
 
-    {% csrf\_token %}
+    {% csrf_token %}
 
     {% for field in form %}
 
-    \<div class="mb-4"\>
+    <div class="mb-4">
 
-        \<label class="erp-label"\>{{ field.label }}\</label\>
+        <label class="erp-label">{{ field.label }}</label>
 
         {{ field }}
 
@@ -28,27 +28,25 @@
 
             {% for e in field.errors %}
 
-                \<p style="color:var(--clr-danger);font-size:.82rem;
-
-                          margin:.25rem 0 0;"\>{{ e }}\</p\>
+                <p style="color:var(--clr-danger);font-size:.82rem;margin:.25rem 0 0;">{{ e }}</p>
 
             {% endfor %}
 
         {% endif %}
 
-    \</div\>
+    </div>
 
     {% endfor %}
 
-    \<div class="d-flex gap-2 mt-3"\>
+    <div class="d-flex gap-2 mt-3">
 
-        \<button type="submit" class="btn-erp-gold"\>Guardar\</button\>
+        <button type="submit" class="btn-erp-gold">Guardar</button>
 
-        \<a href="{% url 'clientes:lista' %}" class="btn-erp-primary"\>Cancelar\</a\>
+        <a href="{% url 'clientes:lista' %}" class="btn-erp-primary">Cancelar</a>
 
-    \</div\>
+    </div>
 
-\</form\>
+</form>
 
 </div>
 
