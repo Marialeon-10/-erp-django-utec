@@ -4,6 +4,7 @@
 Lectura: ListView y DetailView.
 Escritura (Create/Update/Delete): W08.
 """
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -90,6 +91,21 @@ class ClienteDeleteView(LoginRequiredMixin, DeleteView):
 
     def form_valid(self, form):
         nombre = self.object.nombre
+        response = super().form_valid(form)
+        messages.success(self.request, f'Cliente "{nombre}" eliminado.')
+        return response
+
+
+class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    model               = Cliente
+    template_name       = 'clientes/eliminar.html'
+    pk_url_kwarg        = 'cliente_id'
+    success_url         = reverse_lazy('clientes:lista')
+    permission_required = 'clientes.delete_cliente'
+    raise_exception     = True
+
+    def form_valid(self, form):
+        nombre   = self.object.nombre
         response = super().form_valid(form)
         messages.success(self.request, f'Cliente "{nombre}" eliminado.')
         return response

@@ -23,18 +23,19 @@ SECRET_KEY  = env('SECRET_KEY', default='dev-key-insegura-solo-para-desarrollo')
 DEBUG       = env('DEBUG', default=True)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['.onrender.com','localhost','127.0.0.1'])
 
-# core/settings.py — actualizar INSTALLED_APPS
 INSTALLED_APPS = [
-    # Jazzmin PRIMERO — antes de django.contrib.admin
-    'jazzmin',                          # ← nueva línea, primera posición
-
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',        # ← requerido por allauth
     # Terceros
+    'allauth',                     # ← nuevo
+    'allauth.account',             # ← nuevo
+    'allauth.socialaccount',       # ← nuevo (para OAuth futuro)
     'rest_framework',
     'whitenoise.runserver_nostatic',
     # Apps del ERP
@@ -44,25 +45,7 @@ INSTALLED_APPS = [
     'ventas',
     'reportes',
     'configuracion',
-]
-# ── Apps instaladas ───────────────────────────────────────────────────────
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    # Terceros
-    'rest_framework',
-    'whitenoise.runserver_nostatic',
-    # Apps del ERP
-    'clientes',
-    'proveedores',
-    'productos',
-    'ventas',
-    'reportes',
-    'configuracion',   # ← nueva app W05
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -74,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -230,3 +214,26 @@ JAZZMIN_UI_TWEAKS = {
         'success':   'btn-success',
     },
 }
+
+# ── DJANGO SITES (requerido por allauth) ──────────────────────────────────
+SITE_ID = 1
+
+# ── AUTHENTICATION BACKENDS ───────────────────────────────────────────────
+AUTHENTICATION_BACKENDS = [
+    # Backend estándar de Django (username + password en admin)
+    'django.contrib.auth.backends.ModelBackend',
+    # Backend de allauth (permite login por email también)
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# ── ALLAUTH: configuración para desarrollo académico ──────────────────────
+ACCOUNT_LOGIN_METHODS          = {'username'}   # login por username
+ACCOUNT_EMAIL_REQUIRED         = False          # no obligar correo
+ACCOUNT_EMAIL_VERIFICATION     = 'none'         # no enviar email de verificación
+ACCOUNT_LOGOUT_ON_GET          = True           # logout sin confirmar (dev)
+ACCOUNT_SESSION_REMEMBER       = True           # recordar sesión
+
+# LOGIN_URL y LOGIN_REDIRECT_URL ya definidos en W01:
+# LOGIN_URL           = '/accounts/login/'
+# LOGIN_REDIRECT_URL  = '/productos/'
+LOGOUT_REDIRECT_URL = '/'

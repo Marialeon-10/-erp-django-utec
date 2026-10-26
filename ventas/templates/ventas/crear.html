@@ -6,23 +6,23 @@
 
 {% block content %}
 
-<div class="erp-page-title"><h2>💰 Nueva venta</h2></div>
+<div class="erp-page-title"><h2>📦 Nueva venta</h2></div>
 
 <form method="post">
 
-{% csrf\_token %}
+{% csrf_token %}
 
-\<\!-- Encabezado: cliente \--\>
+<!-- Encabezado: Cliente -->
 
-\<div class="erp-card" style="max-width:640px;margin-bottom:1rem;"\>
+<div class="erp-card" style="max-width:640px;margin-bottom:1rem;">
 
-    \<div class="erp-card-header"\>Cliente\</div\>
+    <div class="erp-card-header">Cliente</div>
 
-    {% for field in venta\_form %}
+    {% for field in venta_form %}
 
-    \<div class="mb-4" style="margin-top:.5rem;"\>
+    <div class="mb-4" style="margin-top:.5rem;">
 
-        \<label class="erp-label"\>{{ field.label }}\</label\>
+        <label class="erp-label">{{ field.label }}</label>
 
         {{ field }}
 
@@ -30,35 +30,33 @@
 
             {% for e in field.errors %}
 
-                \<p style="color:var(--clr-danger);font-size:.82rem;
-
-                          margin:.25rem 0 0;"\>{{ e }}\</p\>
+                <p style="color:var(--clr-danger);font-size:.82rem;margin:.25rem 0 0;">{{ e }}</p>
 
             {% endfor %}
 
         {% endif %}
 
-    \</div\>
+    </div>
 
     {% endfor %}
 
-\</div\>
+</div>
 
-\<\!-- Línea de detalle: producto \+ cantidad \+ precio \--\>
+<!-- Línea de detalle: producto + cantidad + precio -->
 
-\<div class="erp-card" style="max-width:640px;margin-bottom:1rem;"\>
+<div class="erp-card" style="max-width:640px;margin-bottom:1rem;">
 
-    \<div class="erp-card-header" style="background:var(--clr-royal);"\>
+    <div class="erp-card-header" style="background:var(--clr-royal);">
 
         Línea de producto
 
-    \</div\>
+    </div>
 
-    {% for field in detalle\_form %}
+    {% for field in detalle_form %}
 
-    \<div class="mb-4" style="margin-top:.5rem;"\>
+    <div class="mb-4" style="margin-top:.5rem;">
 
-        \<label class="erp-label"\>{{ field.label }}\</label\>
+        <label class="erp-label">{{ field.label }}</label>
 
         {{ field }}
 
@@ -66,27 +64,25 @@
 
             {% for e in field.errors %}
 
-                \<p style="color:var(--clr-danger);font-size:.82rem;
-
-                          margin:.25rem 0 0;"\>{{ e }}\</p\>
+                <p style="color:var(--clr-danger);font-size:.82rem;margin:.25rem 0 0;">{{ e }}</p>
 
             {% endfor %}
 
         {% endif %}
 
-    \</div\>
+    </div>
 
     {% endfor %}
 
-\</div\>
+</div>
 
-\<div class="d-flex gap-2"\>
+<div class="d-flex gap-2">
 
-    \<button type="submit" class="btn-erp-gold"\>Registrar venta\</button\>
+    <button type="submit" class="btn-erp-gold">Registrar venta</button>
 
-    \<a href="{% url 'ventas:lista' %}" class="btn-erp-primary"\>Cancelar\</a\>
+    <a href="{% url 'ventas:lista' %}" class="btn-erp-primary">Cancelar</a>
 
-\</div\>
+</div>
 
 </form>
 
