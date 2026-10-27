@@ -20,7 +20,11 @@ class PythonVersionTest(TestCase):
         self.assertEqual(sys.version_info.major, 3)
 
     def test_python_minor_igual_11(self):
+<<<<<<< HEAD
         """Python minor version debe ser 11 o superior."""
+=======
+        """Python minor version debe ser 11 o superior.""" 
+>>>>>>> 74799524a04f07b1af4e8bdc2a9f0b64a35df9fd
         self.assertGreaterEqual(sys.version_info.minor, 11)
 
 
