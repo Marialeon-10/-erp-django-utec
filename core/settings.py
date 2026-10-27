@@ -20,7 +20,7 @@ env = environ.Env(DEBUG=(bool, True))
 environ.Env.read_env(BASE_DIR / '.env')
 
 SECRET_KEY  = env('SECRET_KEY', default='dev-key-insegura-solo-para-desarrollo')
-DEBUG       = env('DEBUG', default=True)
+DEBUG = True
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['.onrender.com','localhost','127.0.0.1'])
 
 INSTALLED_APPS = [
@@ -96,7 +96,8 @@ USE_TZ        = True
 # ── Archivos estáticos ────────────────────────────────────────────────────
 STATIC_URL  = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
 
 # ── Archivos media ────────────────────────────────────────────────────────
 MEDIA_URL  = '/media/'
