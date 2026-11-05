@@ -2,6 +2,8 @@
     
 
 # productos/models.py
+# productos/models.py — al inicio, agregar:
+# (el validador se definirá en validators.py en Parte 2)
 """Modelos de la app productos — Espiral 2 W05.
 
 Orden de implementación:
@@ -9,6 +11,8 @@ Orden de implementación:
   2. Producto   (FK → Categoria, FK → Proveedor)  ← Parte 3
 """
 from decimal import Decimal
+# productos/models.py — agregar al inicio:
+from .validators import validar_imagen_producto
 
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -85,6 +89,15 @@ class Producto(models.Model):
         auto_now_add=True, verbose_name='Fecha de registro'
     )
 
+    imagen = models.ImageField(
+        upload_to='productos/',
+        null=True,
+        blank=True,
+        verbose_name='Imagen del producto',
+        help_text='Formatos: JPEG, PNG, WEBP. Máximo 5 MB.',
+        validators=[validar_imagen_producto],   # ← agregar
+    )
+
     class Meta:
         verbose_name        = 'Producto'
         verbose_name_plural = 'Productos'
@@ -118,3 +131,7 @@ class Producto(models.Model):
     
             if errors:
                 raise ValidationError(errors)
+
+            # En la clase Producto — agregar campo imagen:
+
+   
