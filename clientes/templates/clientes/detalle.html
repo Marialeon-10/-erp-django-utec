@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Cliente{% endblock %}
+{% block nav_clientes %}active{% endblock %}
+
+{% block content %}
+<div class="erp-page-title">
+    <h2>{{ object.nombre }}</h2>
+    <a href="{% url 'clientes:lista' %}" class="btn-erp-primary btn-erp-sm" style="margin-left:auto;">Volver</a>
+</div>
+
+<table class="erp-table">
+    <tr><th>Correo</th><td>{{ object.correo }}</td></tr>
+    <tr><th>Teléfono</th><td>{{ object.telefono|default:"-" }}</td></tr>
+    <tr><th>Estado</th><td>{% if object.activo %}Activo{% else %}Inactivo{% endif %}</td></tr>
+</table>
+{% endblock %}
