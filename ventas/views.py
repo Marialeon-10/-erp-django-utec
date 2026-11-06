@@ -1,5 +1,15 @@
 # ventas/views.py
 """Vistas de la app ventas - W07/W08/W09."""
+import io 
+
+
+from django.http import HttpResponse, Http404
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+from xhtml2pdf import pisa
+
+from configuracion.models import ConfiguracionERP
+from .models import Venta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -44,6 +54,36 @@ class VentaDetailView(DetailView):
             .prefetch_related('detalles__producto')
         )
 
+@login_required
+def venta_pdf(request, venta_id: int) -> HttpResponse:
+    """Genera y descarga la factura de una venta en formato PDF usando xhtml2pdf."""
+    venta = get_object_or_404(
+        Venta.objects
+        .select_related('cliente')
+        .prefetch_related('detalles__producto'),
+        pk=venta_id
+    )
+
+    config = ConfiguracionERP.get_instance()
+    context = {
+        'venta': venta,
+        'config': config,
+    }
+
+    # Renderizar plantilla a HTML string
+    html_string = render_to_string('ventas/factura_pdf.html', context, request=request)
+
+    # Convertir HTML a PDF en memoria
+    buffer = io.BytesIO()
+    pisa_status = pisa.CreatePDF(src=html_string, dest=buffer)
+
+    if pisa_status.err:
+        return HttpResponse('Error al generar el PDF', status=500)
+
+    # Devolver respuesta HTTP con descarga directa
+    response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="factura_{venta.pk:05d}.pdf"'
+    return response
 
 @login_required
 def crear_venta(request):

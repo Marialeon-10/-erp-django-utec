@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Factura #{{ venta.pk }}</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 1.5cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 10pt;
+            color: #1A1A2E;
+        }
+        .header {
+            background-color: #0A2342;
+            color: #FFFFFF;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #B8860B;
+            margin: 0;
+            font-size: 18pt;
+        }
+        .empresa {
+            font-size: 10pt;
+            color: #E8F0FB;
+        }
+        .datos-tabla, .productos-tabla, .total-tabla {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        .datos-tabla td {
+            padding: 5px;
+            font-size: 9.5pt;
+        }
+        .lbl {
+            font-weight: bold;
+            color: #0A2342;
+            background-color: #E8F0FB;
+            width: 25%;
+        }
+        .productos-tabla th {
+            background-color: #0A2342;
+            color: #FFFFFF;
+            padding: 6px;
+            font-size: 9pt;
+            text-align: left;
+        }
+        .productos-tabla td {
+            padding: 6px;
+            border-bottom: 1px solid #E8F0FB;
+            font-size: 9pt;
+        }
+        .num { text-align: right; }
+        .total-tabla td {
+            padding: 6px;
+            font-size: 10pt;
+        }
+        .total-tabla .final {
+            font-weight: bold;
+            background-color: #FDF8E8;
+            color: #B8860B;
+            font-size: 11pt;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>FACTURA #{{ venta.pk|stringformat:"05d" }}</h1>
+        <div class="empresa">{{ config.nombre_empresa }}</div>
+        {% if config.rfc %}<div class="empresa">RFC: {{ config.rfc }}</div>{% endif %}
+    </div>
+
+    <table class="datos-tabla">
+        <tr>
+            <td class="lbl">Cliente:</td>
+            <td>{{ venta.cliente.nombre }}</td>
+            <td class="lbl">Correo:</td>
+            <td>{{ venta.cliente.correo }}</td>
+        </tr>
+        <tr>
+            <td class="lbl">Fecha de emisión:</td>
+            <td>{{ venta.fecha|date:"d/m/Y H:i" }}</td>
+            <td class="lbl">Moneda:</td>
+            <td>{{ config.moneda }}</td>
+        </tr>
+    </table>
+
+    <table class="productos-tabla">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Producto</th>
+                <th class="num">Precio Unit.</th>
+                <th class="num">Cant.</th>
+                <th class="num">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in venta.detalles.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ d.producto.nombre }}</td>
+                <td class="num">${{ d.precio_unitario }}</td>
+                <td class="num">{{ d.cantidad }}</td>
+                <td class="num">${{ d.subtotal }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align:center;">Sin líneas de detalle.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="total-tabla">
+        <tr class="final">
+            <td style="text-align:right; width:70%;">TOTAL:</td>
+            <td class="num" style="width:30%;">${{ venta.total }}</td>
+        </tr>
+    </table>
+</body>
+</html>
