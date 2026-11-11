@@ -43,8 +43,8 @@
             <a href="{% url 'catalogo:catalogo' %}" class="btn-erp-primary">
                 Seguir comprando
             </a>
-            {% if user.is_authenticated %}
-            <a href="{% url 'ventas:detalle' pedido.pk %}"
+            {% if user.is_staff %}
+            <a href="{% url 'admin:ventas_pedido_change' pedido.pk %}"
                class="btn-erp-gold">
                 Ver detalle del pedido
             </a>
