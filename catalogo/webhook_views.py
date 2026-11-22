@@ -23,6 +23,7 @@ from django.views.decorators.http import require_POST
 
 from productos.models import Producto
 from ventas.models    import Pedido
+from ventas.tasks import enviar_confirmacion_pedido
 
 logger = logging.getLogger(__name__)
 
@@ -83,15 +84,9 @@ def stripe_webhook(request) -> HttpResponse:
 
 
 # ── HANDLERS INTERNOS ──────────────────────────────────────────────────────
-
+# En la función _manejar_pago_exitoso(), después de save():
 def _manejar_pago_exitoso(payment_intent: dict) -> None:
-    """Procesa un pago confirmado por Stripe.
-
-    Actualiza el Pedido a 'pagado' y descuenta el stock de productos.
-
-    Args:
-        payment_intent: objeto PaymentIntent del evento de Stripe.
-    """
+    # ... (código existente) ...
     pedido_id = _extraer_pedido_id(payment_intent)
     if pedido_id is None:
         return
@@ -102,16 +97,20 @@ def _manejar_pago_exitoso(payment_intent: dict) -> None:
         logger.error(f'Webhook: Pedido {pedido_id} no encontrado en BD.')
         return
 
-    # Actualizar estado del pedido
     if pedido.estado != 'pagado':
         pedido.estado = 'pagado'
         pedido.save(update_fields=['estado'])
         logger.info(
             f'Pedido {pedido.numero_pedido} actualizado a "pagado".'
         )
-
-        # Descontar stock de cada producto del snapshot
         _descontar_stock(pedido)
+
+        # ── NUEVO W16: disparar tarea de confirmación ─────────────────
+        # El webhook es el lugar más confiable para disparar el correo:
+        # se ejecuta incluso si el usuario cerró el navegador antes de
+        # llegar a pago_exitoso().
+        enviar_confirmacion_pedido.delay(pedido.pk)
+        # ─────────────────────────────────────────────────────────────
     else:
         logger.info(
             f'Pedido {pedido.numero_pedido} ya estaba pagado — '
@@ -154,7 +153,10 @@ def _extraer_pedido_id(payment_intent: dict) -> int | None:
     Returns:
         int con el ID del pedido, o None si no está en el metadata.
     """
-    metadata  = payment_intent.get('metadata', {})
+    if hasattr(payment_intent, 'to_dict'):
+        payment_intent = payment_intent.to_dict()
+
+    metadata = payment_intent.get('metadata', {})
     pedido_id = metadata.get('pedido_id')
 
     if not pedido_id:
