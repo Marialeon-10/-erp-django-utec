@@ -291,6 +291,8 @@ CELERY_TASK_DEFAULT_QUEUE = 'erp_django'
 
 # Para tests: ejecutar tareas sincrónicamente (sin worker)
 # Se activa en tests con @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-CELERY_TASK_ALWAYS_EAGER         = False
-CELERY_TASK_EAGER_PROPAGATES     = True
 
+
+import os
+CELERY_TASK_ALWAYS_EAGER = os.environ.get("CELERY_EAGER", "") == "1"
+CELERY_TASK_EAGER_PROPAGATES = False

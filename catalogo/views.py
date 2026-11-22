@@ -322,7 +322,10 @@ def pago_exitoso(request, pedido_id: int):
     # ── NUEVO W16: disparar tarea asíncrona de confirmación ───────────
     # .delay() envía la tarea al broker Redis de forma no bloqueante.
     # El worker la ejecutará en segundo plano.
-    enviar_confirmacion_pedido.delay(pedido.pk)
+    try:
+        enviar_confirmacion_pedido.delay(pedido.pk)
+    except Exception:
+        pass
     # ──────────────────────────────────────────────────────────────────
 
     messages.success(
