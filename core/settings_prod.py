@@ -111,3 +111,7 @@ if _bucket:
     AWS_QUERYSTRING_AUTH  = False       # URLs públicas (sin firma)
     MEDIA_URL             = f'https://{_bucket}.s3.amazonaws.com/'
 
+# core/settings_prod.py — agregar:
+
+# En producción: usar SendGrid via anymail
+EMAIL_BACKEND = 'anymail.backends.sendgrid.EmailBackend'

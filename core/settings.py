@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'configuracion',
     "core",
     'catalogo', 
+    "anymail"
 ]
 
 MIDDLEWARE = [
@@ -140,6 +141,47 @@ STRIPE_SECRET_KEY     = env('STRIPE_SECRET_KEY',     default='sk_test_placeholde
 STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY', default='pk_test_placeholder')
 STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET', default='whsec_placeholder')
 
+# core/settings.py — configuración de correo electrónico
+
+# ── CORREO ELECTRÓNICO ────────────────────────────────────────────────────
+# En desarrollo: usar el backend de consola (imprime en terminal)
+# En producción: anymail con SendGrid
+EMAIL_BACKEND = env(
+    'EMAIL_BACKEND',
+    default='django.core.mail.backends.console.EmailBackend'
+)
+
+# Configuración SMTP (Gmail)
+EMAIL_HOST = env('EMAIL_HOST', default='localhost')
+EMAIL_PORT = int(env('EMAIL_PORT', default='25'))
+EMAIL_USE_TLS = env('EMAIL_USE_TLS', default='False') == 'True'
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+
+
+# Dirección del remitente visible en los correos
+DEFAULT_FROM_EMAIL = env(
+    'DEFAULT_FROM_EMAIL',
+    default='ERP Django <noreply@erp-django.com>'
+)
+
+# Nombre del asunto con prefijo del sistema
+EMAIL_SUBJECT_PREFIX = '[ERP Django] '
+
+# Administradores que reciben alertas del sistema
+ADMINS = [
+    ('Admin ERP', env('ADMIN_EMAIL', default='admin@erp-django.com')),
+]
+
+# Configuración de django-anymail (SendGrid)
+SENDGRID_API_KEY = env('SENDGRID_API_KEY', default='')
+ANYMAIL = {
+    'SENDGRID_API_KEY': SENDGRID_API_KEY,
+    # Reintentar envíos fallidos automáticamente
+    'SEND_DEFAULTS': {
+        'esp_extra': {'ip_pool_name': 'transactional'},
+    },
+}
 
 # ── JAZZMIN — Personalización del admin con Fable 5 AzulERP ───────────────
 JAZZMIN_SETTINGS = {
@@ -238,6 +280,41 @@ JAZZMIN_UI_TWEAKS = {
     },
 }
 
+# core/settings.py — configuración de correo electrónico
+
+# ── CORREO ELECTRÓNICO ────────────────────────────────────────────────────
+# En desarrollo: usar el backend de consola (imprime en terminal)
+# En producción: anymail con SendGrid
+EMAIL_BACKEND = env(
+    'EMAIL_BACKEND',
+    default='django.core.mail.backends.console.EmailBackend'
+)
+
+# Dirección del remitente visible en los correos
+DEFAULT_FROM_EMAIL = env(
+    'DEFAULT_FROM_EMAIL',
+    default='ERP Django <noreply@erp-django.com>'
+)
+
+# Nombre del asunto con prefijo del sistema
+EMAIL_SUBJECT_PREFIX = '[ERP Django] '
+
+# Administradores que reciben alertas del sistema
+ADMINS = [
+    ('Admin ERP', env('ADMIN_EMAIL', default='admin@erp-django.com')),
+]
+
+# Configuración de django-anymail (SendGrid)
+SENDGRID_API_KEY = env('SENDGRID_API_KEY', default='')
+ANYMAIL = {
+    'SENDGRID_API_KEY': SENDGRID_API_KEY,
+    # Reintentar envíos fallidos automáticamente
+    'SEND_DEFAULTS': {
+        'esp_extra': {'ip_pool_name': 'transactional'},
+    },
+}
+
+
 # ── DJANGO SITES (requerido por allauth) ──────────────────────────────────
 SITE_ID = 1
 
@@ -294,5 +371,9 @@ CELERY_TASK_DEFAULT_QUEUE = 'erp_django'
 
 
 import os
-CELERY_TASK_ALWAYS_EAGER = os.environ.get("CELERY_EAGER", "") == "1"
+import sys
+CELERY_TASK_ALWAYS_EAGER = (
+    os.environ.get("CELERY_EAGER", "") == "1" or "test" in sys.argv
+)
 CELERY_TASK_EAGER_PROPAGATES = False
+
