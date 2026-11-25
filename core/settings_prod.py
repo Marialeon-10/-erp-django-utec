@@ -113,5 +113,8 @@ if _bucket:
 
 # core/settings_prod.py — agregar:
 
-# En producción: usar SendGrid via anymail
-EMAIL_BACKEND = 'anymail.backends.sendgrid.EmailBackend'
+# En producción: usar Resend via anymail
+EMAIL_BACKEND = 'anymail.backends.resend.EmailBackend'
+ANYMAIL = {
+    'RESEND_API_KEY': os.environ.get('RESEND_API_KEY', ''),
+}
